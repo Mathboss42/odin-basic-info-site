@@ -1,32 +1,31 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
+const app = express();
+const port = 3000;
 
-http.createServer(function (req, res) {
-    const view = getView(req.url);
+app.set('view engine', 'ejs');
+
+app.use((req, res) => {
+    const view = getView(req.originalUrl);
 
     if (view) {
-        fs.readFile(view, (err, data) => {
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.write(data);
-            return res.end();
-        });
+        res.render(view);
     } else {
-        fs.readFile('404.html', (err, data) => {
-            res.writeHead(404, {'Content-Type': 'text/html'});
-            res.write(data);
-            return res.end();
-        });
+        res.status(404).render('404');
     }
-    
-}).listen(8080);
+})
+
+app.listen(port, () => {
+    console.log(`App running on port ${port}`);
+})
+
 
 function getView(url) {
     switch (url) {
         case '/':
-            return 'index.html';
+            return 'index.ejs';
         case '/about':
-            return 'about.html';
+            return 'about.ejs';
         case '/contact-me':
-            return 'contact-me.html';
+            return 'contact-me.ejs';
     }
 }
